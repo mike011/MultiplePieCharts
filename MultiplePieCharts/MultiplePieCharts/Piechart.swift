@@ -37,10 +37,10 @@ open class Piechart: UIControl {
     }
     private var outerPaths = [UIBezierPath]()
     private var innerPaths = [UIBezierPath]()
-    private var donutPath: UIBezierPath?
+    private var centerPath: UIBezierPath?
 
-    var innerRadius: Radius = Radius(type: .inner, inner: 20, outer: 40, border: 2)
-    var outerRadius: Radius = Radius(type: .outer, inner: 60, outer: 80, border: 2)
+    var innerRadius: Radius = Radius(type: .inner, inner: 20, outer: 50, border: 2)
+    var outerRadius: Radius = Radius(type: .outer, inner: 60, outer: 120, border: 5)
     var activeSlice: (RadiusTpe,Int)?
 
     open var innnerSlices: [Slice] = []
@@ -106,24 +106,26 @@ open class Piechart: UIControl {
             // increase start value for next slice
             startValue += slice.value / total
         }
-        drawDonut(radius: radius)
+
+        drawCenterCircle(radius: radius)
+
         return paths
     }
 
-    private func drawDonut(radius: Radius) {
+    private func drawCenterCircle(radius: Radius) {
         let center = CGPoint(x: bounds.width / 2, y: bounds.height / 2)
-        donutPath = UIBezierPath()
-        donutPath?.move(to: center)
-        donutPath?.addArc(withCenter: center, radius: radius.inner, startAngle: 0, endAngle: CGFloat(Double.pi) * 2, clockwise: true)
+        centerPath = UIBezierPath()
+        centerPath?.move(to: center)
+        centerPath?.addArc(withCenter: center, radius: radius.inner, startAngle: 0, endAngle: CGFloat(Double.pi) * 2, clockwise: true)
         backgroundColor?.setFill()
-        donutPath?.fill()
+        centerPath?.fill()
     }
 }
 
 extension Piechart {
     open override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
         let pt = touch.location(in: self)
-        guard let inner = donutPath, !inner.contains(pt) else {
+        guard let inner = centerPath, !inner.contains(pt) else {
             return true
         }
         for i in 0..<outerPaths.count {
@@ -158,26 +160,15 @@ extension Piechart {
 
 extension Piechart {
     public func setupPieChart() {
-        innnerSlices.append(Slice())
-        innnerSlices.append(Slice())
-        innnerSlices.append(Slice())
-        innnerSlices.append(Slice())
-        innnerSlices.append(Slice())
-        innnerSlices.append(Slice())
+        for _ in 0..<6 {
+            innnerSlices.append(Slice())
+        }
 
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
-        outerSlices.append(Slice())
+        for _ in 0..<12 {
+            outerSlices.append(Slice())
+        }
         translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = UIColor.white
+        backgroundColor = UIColor.systemBackground
 
     }
 }
