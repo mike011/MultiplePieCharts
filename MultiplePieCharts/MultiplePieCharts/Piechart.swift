@@ -172,3 +172,7 @@ extension Piechart {
 
     }
 }
+
+#Preview {
+    Piechart()
+}
